@@ -9,6 +9,7 @@ on:
   pull_request:
 env:
   IMAGE_NAME: netbox-operator
+  DOCKER_METADATA_PR_HEAD_SHA: true
 jobs:
   push:
     runs-on: ubuntu-latest
@@ -33,6 +34,11 @@ jobs:
         uses: docker/metadata-action@v5.5.1
         with:
           images: ${{ env.IMAGE_NAME }}        
+          tags: |
+            # set latest tag for default branch
+            type=raw,value=latest,enable={{is_default_branch}}
+            # dynamically set the branch name as a prefix
+            type=sha
       - name: Build and push image
         run: |
           # generate IMAGE_ID
