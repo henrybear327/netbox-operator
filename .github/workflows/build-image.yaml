@@ -36,9 +36,9 @@ jobs:
           images: ${{ env.IMAGE_NAME }}        
           tags: |
             # set latest tag for default branch
-            type=raw,value=latest,enable={{is_default_branch}}
+            type=raw,value=latest,enable=${{ github.ref == format('refs/heads/{0}', 'main') }}
             # dynamically set the branch name as a prefix
-            type=sha
+            type=sha,enable=${{ github.ref != format('refs/heads/{0}', 'main') }}
       - name: Build and push image
         run: |
           # generate IMAGE_ID
