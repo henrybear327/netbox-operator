@@ -226,3 +226,8 @@ $(ENVTEST): $(LOCALBIN)
 generate_mocks: # TODO: auto install go install go.uber.org/mock/mockgen@latest
 	mkdir -p ${GEN_DIR}
 	mockgen -destination ${GEN_DIR}/${NETBOX_MOCKS_OUTPUT_FILE} -source=${INTERFACE_DEFITIONS_DIR}
+
+.PHONY: test-e2e
+test-e2e: KUBECONFIG?=$(HOME)/.kube/config
+test-e2e: test/instrumented-sample-app/certs/cert.pem test/instrumented-sample-app/certs/key.pem
+	go test -timeout 120m -v ./test/e2e/ $(TEST_RUN_ARGS) --kubeconfig=$(KUBECONFIG) --operator-image=$(IMAGE_OPERATOR):$(TAG) -count=1
