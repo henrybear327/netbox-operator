@@ -1,0 +1,44 @@
+apiVersion: chainsaw.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: apply-ipv6-prefixclaim-parentprefixselector
+spec:
+  steps:
+  - try:
+    - apply:
+        file: netbox_v1_prefixclaim.yaml
+    - assert:
+        resource:
+          apiVersion: netbox.dev/v1
+          kind: PrefixClaim
+          metadata:
+            name: prefixclaim-ipv6-parentprefixselector-sample
+          spec:
+            comments: your comments
+            description: some description
+            parentPrefixSelector:
+              environment: production
+              family: IPv6
+              poolName: pool 4
+              tenant: Dunder-Mifflin, Inc.
+            prefixLength: /124
+            preserveInNetbox: true
+            tenant: Dunder-Mifflin, Inc.
+          status:
+            parentPrefix: 2::/64
+            prefix: 2::/124
+            prefixName: prefixclaim-ipv6-parentprefixselector-sample
+    - assert:
+        resource:
+          apiVersion: netbox.dev/v1
+          kind: Prefix
+          metadata:
+            name: prefixclaim-ipv6-parentprefixselector-sample
+          spec:
+            comments: your comments
+            description: some description
+            prefix: 2::/124
+            preserveInNetbox: true
+            tenant: Dunder-Mifflin, Inc.
+            customFields:
+              netboxOperatorRestorationHash: a1847e58a2b542d342aae96523d70d8a906b1b8e

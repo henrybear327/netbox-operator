@@ -228,6 +228,5 @@ generate_mocks: # TODO: auto install go install go.uber.org/mock/mockgen@latest
 	mockgen -destination ${GEN_DIR}/${NETBOX_MOCKS_OUTPUT_FILE} -source=${INTERFACE_DEFITIONS_DIR}
 
 .PHONY: test-e2e
-test-e2e: KUBECONFIG?=$(HOME)/.kube/config
-test-e2e: test/instrumented-sample-app/certs/cert.pem test/instrumented-sample-app/certs/key.pem
-	go test -timeout 120m -v ./test/e2e/ $(TEST_RUN_ARGS) --kubeconfig=$(KUBECONFIG) --operator-image=$(IMAGE_OPERATOR):$(TAG) -count=1
+test-e2e: # notice that if we apply several CRs at the same time, the IP/Prefix/etc. allocated to the CR might differ each time due to the timing of execution for reservation on the NetBox side
+	chainsaw test --namespace e2e

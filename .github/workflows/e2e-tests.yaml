@@ -25,6 +25,10 @@ jobs:
     - uses: actions/setup-go@41dfa10bad2bb2ae585af6ee5bb4d7d973ad74ed # v5.1.0
       with: 
         go-version: 1.23.4
+    - name: Install Chainsaw
+      uses: kyverno/action-install-chainsaw@f2b47b97dc889c12702113753d713f01ec268de5 #v0.2.12
+    - name: Check Chainsaw installation
+      run: chainsaw version
     - name: Import environment variables from file
       run: |
         cat ".github/env" >> "$GITHUB_ENV"
@@ -58,10 +62,13 @@ jobs:
       env:
         E2E_DIAGNOSTIC_DIRECTORY: ${{ env.E2E_DIAGNOSTIC_DIRECTORY }}
       run: |
-        # Very straight forward way of implementing a test and checking the result
-        kubectl apply -f config/samples/netbox_v1_prefixclaim.yaml
-        kubectl get prefixclaim,prefix,ipaddressclaim,ipaddress,iprange,iprangeclaim
-        kubectl wait --for=condition=ready --timeout=30s prefixclaim.netbox.dev/prefixclaim-sample
+        # # Very straight forward way of implementing a test and checking the result
+        # kubectl apply -f config/samples/netbox_v1_prefixclaim.yaml
+        # kubectl get prefixclaim,prefix,ipaddressclaim,ipaddress,iprange,iprangeclaim
+        # kubectl wait --for=condition=ready --timeout=30s prefixclaim.netbox.dev/prefixclaim-sample
+
+        # Use Chainsaw
+        make test-e2e
     - name: Upload diagnostics artifact
       if: ${{ failure() }}
       uses: actions/upload-artifact@b4b15b8c7c6ac21ea08fcf65892d2ee8f75cf882 # v4.4.3
