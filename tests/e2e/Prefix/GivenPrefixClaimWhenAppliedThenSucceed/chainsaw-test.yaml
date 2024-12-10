@@ -1,0 +1,27 @@
+apiVersion: chainsaw.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: apply-prefixclaim
+spec:
+  steps:
+  - try:
+    - apply:
+        file: netbox_v1_prefixclaim.yaml
+    - assert:
+        resource:
+          apiVersion: netbox.dev/v1
+          kind: PrefixClaim
+          metadata:
+            name: prefixclaim-sample
+          spec:
+            comments: your comments
+            description: some description
+            parentPrefix: 2.0.0.0/16
+            prefixLength: /28
+            preserveInNetbox: true
+            site: DM-Akron
+            tenant: Dunder-Mifflin, Inc.
+          status:
+            parentPrefix: 2.0.0.0/16
+            prefix: 2.0.0.0/28
+            prefixName: prefixclaim-sample
